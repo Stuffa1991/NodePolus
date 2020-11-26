@@ -24,7 +24,6 @@ import {
   DisconnectionEvent,
   JoinRoomEvent,
   JoinRoomRequestEvent,
-  SendChatEvent,
 } from "../events";
 import { LimboState } from "../data/enums/limboState";
 import { ClientVersion } from "../packets/packetElements/clientVersion";
@@ -39,7 +38,6 @@ type ConnectionEvents = Events & {
   close: () => Promise<void>;
   joinRoomRequest: (event: JoinRoomRequestEvent) => Promise<void>;
   joinRoom: (event: JoinRoomEvent) => Promise<void>;
-  sendChat: (event: SendChatEvent) => Promise<void>;
 };
 
 export class Connection extends AsyncEventEmitter<ConnectionEvents> {

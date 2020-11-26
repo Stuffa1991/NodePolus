@@ -229,10 +229,9 @@ export class Room extends EventEmitter {
                 if (connection && connection.player) {
                   let sendChatEvent = new SendChatEvent(
                     connection.player,
-                    this,
                     chatData.ChatText
                   );
-                  connection.emit("sendChat", sendChatEvent);
+                  this.emit("sendChat", sendChatEvent);
                 }
               }
             }

@@ -42,6 +42,22 @@ server.on("roomCreated", async (evt: RoomCreationEvent) => {
       }
     }, 2500);
   });
+  room.on("sendChat", async (evt: SendChatEvent) => {
+    if (evt.message.startsWith("!")) {
+      let command = evt.message.split(" ");
+      if (command.length > 0 && command[0] === "!color") {
+        let commandColor = command[1].toUpperCase();
+        if (commandColor) {
+          let newColor = <string | number>commandColor;
+          let actualColor = !Number(newColor)
+            ? PlayerColor[<any>newColor]
+            : newColor;
+          let playerColor = <PlayerColor>actualColor;
+          evt.player.setColor(playerColor);
+        }
+      }
+    }
+  });
 });
 
 server.on("joinRoomRequest", async (evt: JoinRoomRequestEvent) => {
@@ -60,22 +76,6 @@ server.on("connection", async (evt: ConnectionEvent) => {
   evt.connection.on("joinRoom", async (evt: JoinRoomEvent) => {
     console.log(`[Event] Connection[${connection.ID}] > 'joinRoom'`);
     // evt.player.setName("A Name Override")
-  });
-  evt.connection.on("sendChat", async (evt: SendChatEvent) => {
-    if (evt.message.startsWith("!")) {
-      let command = evt.message.split(" ");
-      if (command.length > 0 && command[0] === "!color") {
-        let commandColor = command[1].toUpperCase();
-        if (commandColor) {
-          let newColor = <string | number>commandColor;
-          let actualColor = !Number(newColor)
-            ? PlayerColor[<any>newColor]
-            : newColor;
-          let playerColor = <PlayerColor>actualColor;
-          evt.player.setColor(playerColor);
-        }
-      }
-    }
   });
 });
 
