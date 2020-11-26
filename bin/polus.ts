@@ -11,6 +11,7 @@ import {
   JoinRoomEvent,
   SendChatEvent,
 } from "../lib/events";
+import { PlayerColor } from "../lib/data/enums/playerEnums";
 
 // import AnnouncementServer from "../lib/announcements/Server";
 // import { FreeWeekendState } from '../lib/announcements/packets/subpackets/FreeWeekend';

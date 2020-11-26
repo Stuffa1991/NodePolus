@@ -29,7 +29,7 @@ import { SendChatPacket } from "../packets/subpackets/gameDataPackets/rpcPackets
 import { Component } from "../packets/packetElements/component";
 
 export declare interface Room {
-  on(event: "close" | "playerJoined", listener: Function): this;
+  on(event: "close" | "playerJoined" | "sendChat", listener: Function): this;
 }
 
 export class Room extends EventEmitter {
