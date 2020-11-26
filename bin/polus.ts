@@ -9,6 +9,7 @@ import {
   RoomListingRequestEvent,
   DisconnectionEvent,
   JoinRoomEvent,
+  SendChatEvent,
 } from "../lib/events";
 
 // import AnnouncementServer from "../lib/announcements/Server";
@@ -58,6 +59,22 @@ server.on("connection", async (evt: ConnectionEvent) => {
   evt.connection.on("joinRoom", async (evt: JoinRoomEvent) => {
     console.log(`[Event] Connection[${connection.ID}] > 'joinRoom'`);
     // evt.player.setName("A Name Override")
+  });
+  evt.connection.on("sendChat", async (evt: SendChatEvent) => {
+    if (evt.message.startsWith("!")) {
+      let command = evt.message.split(" ");
+      if (command.length > 0 && command[0] === "!color") {
+        let commandColor = command[1].toUpperCase();
+        if (commandColor) {
+          let newColor = <string | number>commandColor;
+          let actualColor = !Number(newColor)
+            ? PlayerColor[<any>newColor]
+            : newColor;
+          let playerColor = <PlayerColor>actualColor;
+          evt.player.setColor(playerColor);
+        }
+      }
+    }
   });
 });
 

@@ -16,12 +16,17 @@ import { PolusBuffer } from "./polusBuffer";
 import { DataPacket } from "../packets/subpackets/gameDataPackets/data";
 import { ObjectType } from "../packets/subpackets/gameDataPackets/spawn";
 import { Player } from "./player";
-import { JoinRoomEvent } from "../events";
+import { JoinRoomEvent, SendChatEvent } from "../events";
 import { UpdateGameDataPacket } from "../packets/subpackets/gameDataPackets/rpcPackets/updateGameData";
-import { GameDataPlayerData } from "../packets/packetElements/componentTypes";
+import {
+  GameDataPlayerData,
+  PlayerControl,
+} from "../packets/packetElements/componentTypes";
 import { Task } from "./task";
 import { GameState } from "../data/enums/gameState";
 import { LimboState } from "../data/enums/limboState";
+import { SendChatPacket } from "../packets/subpackets/gameDataPackets/rpcPackets/sendChat";
+import { Component } from "../packets/packetElements/component";
 
 export declare interface Room {
   on(event: "close" | "playerJoined", listener: Function): this;
@@ -195,6 +200,42 @@ export class Room extends EventEmitter {
             }
           }
           if (GDPacket.type == GameDataPacketType.RPC) {
+            if (GDPacket.RPCFlag === RPCPacketType.SendChat) {
+              const component = this.GameObjects.reduce(
+                (acc: Component[], cur: IGameObject) => {
+                  let foundComponent = cur.Components.find(
+                    (component: Component) => {
+                      return component.netID == GDPacket.NetID;
+                    }
+                  );
+
+                  if (foundComponent) {
+                    acc.push(foundComponent);
+                  }
+                  return acc;
+                },
+                []
+              );
+
+              if (component.length !== 0) {
+                let chatData = <SendChatPacket>GDPacket.Packet;
+                let connection = this.connections.find((con) => {
+                  return (
+                    con.player?.ID ===
+                    Number((<PlayerControl>component[0].Data).id)
+                  );
+                });
+
+                if (connection && connection.player) {
+                  let sendChatEvent = new SendChatEvent(
+                    connection.player,
+                    this,
+                    chatData.ChatText
+                  );
+                  connection.emit("sendChat", sendChatEvent);
+                }
+              }
+            }
             if (GDPacket.RPCFlag == RPCPacketType.UpdateGameData) {
               let pd = (<UpdateGameDataPacket>GDPacket.Packet).PlayerData;
               if (connection.isHost && pd[0].PlayerName != "") {
